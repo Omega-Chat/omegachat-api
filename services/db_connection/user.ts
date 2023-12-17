@@ -3,9 +3,9 @@ import { DB_URL } from '../../constants.ts';
 import { Connection } from '../connection.ts';
 
 interface ElGamalPublicKey {
-  p: bigint;
-  g: bigint;
-  e: bigint;
+  p: string;
+  g: string;
+  e: string;
 }
 
 interface User {
@@ -13,7 +13,7 @@ interface User {
   email: string,
   name: string,
   password: string,
-  pub_key: ElGamalPublicKey,
+  pub_key?: ElGamalPublicKey,
   id_addressee?: string,
   id_group?: string,
   online: boolean
@@ -33,6 +33,7 @@ const UserSchema = new Schema<User>(
       type: String,
       ref: 'ChatGroup',
     },
+    online: Boolean
   },
   { timestamps: true }
 );
@@ -64,12 +65,23 @@ export class MongoDBUserService {
     return UserModel.find({});
   }
 
-  async deleteById(userId: string): Promise<void> {
-    await this.connect();
-    await UserModel.deleteOne({ _id: userId });
+  async exitUserById(userId: string, newState: boolean): Promise<User | null> {
+    try {
+      await this.connect();
+      const exitedUser = await UserModel.findByIdAndUpdate(
+        userId,
+        { $set: { online: newState } },
+        { new: true }
+      );
+      return exitedUser;
+
+    } catch (error) {
+      console.error('Error exiting:', error);
+      return null;
+    }
   }
 
-  async updatePubKey(userId: string, newPubKey: number[]): Promise<User | null> {
+  async updatePubKey(userId: string, newPubKey: ElGamalPublicKey): Promise<User | null> {
     try {
       await this.connect();
       const updatedUser = await UserModel.findByIdAndUpdate(
