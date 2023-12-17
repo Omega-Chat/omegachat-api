@@ -1,15 +1,15 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { DB_URL } from '../../constants';
-import { Connection } from '../connection';
+import { DB_URL } from '../../constants.ts';
+import { Connection } from '../connection.ts';
 
 interface ChatGroup extends Document {
-  msg_list: string[];
+  msg_list: string[][];
 }
 
 const ChatGroupSchema = new Schema<ChatGroup>(
   {
     msg_list: {
-      type: [String], // Array of strings (messages)
+      type: [[String]], // Array of strings (messages)
       default: [],
     },
   },
@@ -36,15 +36,24 @@ export class MongoDBChatGroupService {
   }
 
   async addMessageToGroup(groupId: string, message: string): Promise<ChatGroup | null> {
-    await this.connect();
-    return ChatGroupModel.findByIdAndUpdate(
-      groupId,
-      { $push: { msg_list: message }, $set: { updatedAt: Date.now() } },
-      { new: true }
-    );
-  }
+    try {
+      await this.connect();
+      const updatedGroup = await ChatGroupModel.findByIdAndUpdate(
+        groupId,
+        { $push: { msg_list: message }, $set: { updatedAt: Date.now() } },
+        { new: true }
+      );
+      if (!updatedGroup) {
+        throw new Error('Chat group not found');
+      }
+      return updatedGroup;
+    } catch (error) {
+      console.error('Error adding message to chat group:', error);
+      return null;
+    }
+  }  
 
-  async getMessagesFromGroup(groupId: string): Promise<string[] | null> {
+  async getMessagesFromGroup(groupId: string): Promise<string[][] | null> {
     await this.connect();
     const group = await ChatGroupModel.findById(groupId);
     return group ? group.msg_list : null;

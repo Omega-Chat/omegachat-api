@@ -1,35 +1,27 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { DB_URL } from '../../constants';
-import { Connection } from '../connection';
+import { DB_URL } from '../../constants.ts';
+import { Connection } from '../connection.ts';
 
 interface Chat extends Document {
-  id_usuario1: string;
-  id_usuario2: string;
-  msg_list: string[];
-  data_hora: Date;
+  id_usuario1?: string;
+  id_usuario2?: string;
+  msg_list: string[][];
 }
 
 const ChatSchema = new Schema<Chat>(
   {
     id_usuario1: {
-      type: Schema.Types.ObjectId,
+      type: String,
       ref: 'ChatUser', // Reference to user 1
-      required: true,
     },
     id_usuario2: {
-      type: Schema.Types.ObjectId,
-      ref: 'ChatUser', // Reference to user 2
-      required: true,
+      type: String,
+      ref: 'ChatUser',
     },
     msg_list: {
-      type: [String], // Array of strings (messages)
-      default: [],
+      type: [[String]],
     },
-    data_hora: {
-      type: Date,
-      default: Date.now,
-    },
-  },
+},
   { timestamps: true }
 );
 
@@ -49,7 +41,6 @@ export class MongoDBChatService {
     const newChat = await ChatModel.create({
       id_usuario1,
       id_usuario2,
-      msg_list: [],
     });
     return newChat;
   }
@@ -65,17 +56,43 @@ export class MongoDBChatService {
   }
 
   async addMessageToChat(chatId: string, message: string): Promise<Chat | null> {
-    await this.connect();
-    return ChatModel.findByIdAndUpdate(
-      chatId,
-      { $push: { msg_list: message }, $set: { data_hora: Date.now() } },
-      { new: true }
-    );
+    try {
+      await this.connect();
+      const updatedChat = await ChatModel.findByIdAndUpdate(
+        chatId,
+        { $push: { msg_list: message }, $set: { data_hora: Date.now() } },
+        { new: true }
+      );
+      if (!updatedChat) {
+        throw new Error('Chat not found');
+      }
+      return updatedChat;
+    } catch (error) {
+      console.error('Error adding message to chat:', error);
+      return null;
+    }
   }
 
-  async getMessagesFromChat(chatId: string): Promise<string[] | null> {
-    await this.connect();
-    const chat = await ChatModel.findById(chatId);
-    return chat ? chat.msg_list : null;
+  async getMessagesFromChat(chatId: string): Promise<string[][] | null> {
+    try {
+      await this.connect();
+      const chat = await ChatModel.findById(chatId);
+      return chat ? chat.msg_list : null;
+    } catch (error) {
+      console.error('Error fetching messages from chat:', error);
+      return null;
+    }
   }
+
+  async deleteChat(chatId: string): Promise<boolean> {
+    try {
+      await this.connect();
+      const deletedChat = await ChatModel.findByIdAndDelete(chatId);
+      return !!deletedChat; // Returns true if the chat was successfully deleted, false otherwise
+    } catch (error) {
+      console.error('Error deleting chat:', error);
+      return false;
+    }
+  }  
+  
 }

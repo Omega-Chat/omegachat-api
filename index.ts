@@ -1,11 +1,9 @@
 // index.js
 const express = require('express');
-const app = express();
+const userRoutes = require('./ws_routes/user.ts');
+const chatRoutes = require('./ws_routes/chat.ts');
 
-// Import route files
-const userRoutes = require('C:/Users/guita/OneDrive/Documentos/GitHub/omegachat-api/ws_routes/user.ts');
-const chatRoutes = require('./ws_routes/chat/ChatRouter');
-// You can import other route files similarly
+const app = express();
 
 // Use the route files in your app
 app.use('/api', userRoutes);

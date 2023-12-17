@@ -1,47 +1,35 @@
-import mongoose, { Schema, Document } from 'mongoose';
-import { DB_URL } from '../../constants';
-import { Connection } from '../connection';
+import mongoose, { Schema } from 'mongoose';
+import { DB_URL } from '../../constants.ts';
+import { Connection } from '../connection.ts';
 
-interface ChatUser extends Document {
-  email: string;
-  name: string;
-  password: string;
-  pub_key: number[];
-  id_addressee: string; // Assuming this refers to another user
-  id_group: string; // Assuming this refers to a chat group
+interface ChatUser {
+  email: string
+  name: string
+  password: string
+  pub_key: number[]
+  id_addressee?: string
+  id_group?: string
 }
 
 const ChatUserSchema = new Schema<ChatUser>(
   {
-    email: {
-      type: String,
-      required: true,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-    pub_key: {
-      type: [Number], // Array of numbers (assuming public key)
-      default: [],
-    },
+    email: String,
+    name: String,
+    password: String,
+    pub_key: [Number],
     id_addressee: {
-      type: Schema.Types.ObjectId,
-      ref: 'ChatUser', // Reference to another user
+      type: String,
+      ref: 'ChatUser',
     },
     id_group: {
-      type: Schema.Types.ObjectId,
-      ref: 'ChatGroup', // Reference to a chat group
+      type: String,
+      ref: 'ChatGroup',
     },
   },
   { timestamps: true }
 );
 
-const ChatUserModel = mongoose.model<ChatUser>('ChatUser', ChatUserSchema);
+const ChatUserModel = mongoose.model('ChatUser', ChatUserSchema);
 
 export class MongoDBChatUserService {
   constructor(private readonly connection: Connection) {}

@@ -1,7 +1,7 @@
 import express from 'express';
 import { Request, Response } from 'express';
-import { MongoDBConnection } from '../services/db_connection/mdb_connection';
-import { MongoDBChatUserService } from '../services/db_connection/user';
+import { MongoDBConnection } from '../services/db_connection/mdb_connection.ts';
+import { MongoDBChatUserService } from '../services/db_connection/user.ts';
 
 const UserRouter = express.Router();
 

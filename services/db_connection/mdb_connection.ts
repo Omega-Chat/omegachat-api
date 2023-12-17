@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import {Connection} from '../connection'
+import {Connection} from '../connection.ts'
 
 export class MongoDBConnection implements Connection {
   async connect(dbURL: string): Promise<boolean> {

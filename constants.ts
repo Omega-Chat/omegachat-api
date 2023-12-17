@@ -1,1 +1,1 @@
-export const DB_URL = process.env.DB_URL
+export const DB_URL = 'mongodb+srv://omegaChat:1234@cluster0.1nzbpgp.mongodb.net/'

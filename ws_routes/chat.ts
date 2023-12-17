@@ -1,8 +1,8 @@
 import express from 'express';
 import { createServer } from 'http';
-import { Server as WebSocketServer } from 'ws';
-import { MongoDBConnection } from '../services/db_connection/mdb_connection';
-import { MongoDBChatService } from '../services/db_connection/chat';
+import { WebSocketServer } from 'ws';
+import { MongoDBConnection } from '../services/db_connection/mdb_connection.ts';
+import { MongoDBChatService } from '../services/db_connection/chat.ts';
 
 const ChatRouter = express.Router();
 const chatService = new MongoDBChatService(new MongoDBConnection());
@@ -14,7 +14,7 @@ ChatRouter.post('/chats', async (req, res) => {
     const newChat = await chatService.createChat(id_usuario1, id_usuario2);
     res.status(201).json(newChat);
   } catch (error) {
-    res.status(400).json({ message: error.message || 'Error creating a new chat' });
+    res.status(400).json({ message: (error as any).message || 'Error creating a new chat' });
   }
 });
 
@@ -25,39 +25,53 @@ ChatRouter.get('/chats/:id_usuario1/:id_usuario2', async (req, res) => {
     const chat = await chatService.findChatByUsers(id_usuario1, id_usuario2);
     res.json(chat || {});
   } catch (error) {
-    res.status(400).json({ message: error.message || 'Error finding chat' });
+    res.status(400).json({ message: (error as any).message || 'Error finding chat' });
   }
 });
 
-// Create an HTTP server
-const app = express();
-const httpServer = createServer(app);
+// Route to add a message to a chat
+ChatRouter.post('/chats/:chatId/messages', async (req, res) => {
+  try {
+    const { chatId } = req.params;
+    const { message } = req.body;
+    console.log(message)
+    const updatedChat = await chatService.addMessageToChat(chatId, message);
+    res.status(201).json(updatedChat);
+  } catch (error) {
+    res.status(400).json({ message: (error as any).message || 'Error adding message to chat' });
+  }
+});
 
-// Create a WebSocket server
-const wss = new WebSocketServer({ server: httpServer });
+// Route to get messages from a chat
+ChatRouter.get('/chats/:chatId/messages', async (req, res) => {
+  try {
+    const { chatId } = req.params;
+    const messages = await chatService.getMessagesFromChat(chatId);
 
-// WebSocket message handling
-wss.on('connection', (ws) => {
-  ws.on('message', async (message) => {
-    try {
-      const data = JSON.parse(message);
-      const { chatId, content } = data;
-
-      // Handle adding messages to a chat
-      const updatedChat = await chatService.addMessageToChat(chatId, content);
-
-      // Broadcast the updated chat to all connected clients if needed
-      wss.clients.forEach((client) => {
-        if (client !== ws && client.readyState === WebSocketServer.OPEN) {
-          client.send(JSON.stringify({ type: 'UPDATED_CHAT', data: updatedChat }));
-        }
-      });
-    } catch (error) {
-      console.error('WebSocket error:', error);
+    if (messages !== null) {
+      res.status(200).json(messages);
+    } else {
+      res.status(404).json({ message: 'Chat not found or no messages available' });
     }
-  });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching messages from chat' });
+  }
+});
 
-  // Other WebSocket event handling (e.g., close, error) if needed...
+// Route to delete a chat by its ID
+ChatRouter.delete('/chats/:chatId', async (req, res) => {
+  try {
+    const { chatId } = req.params;
+    const deleted = await chatService.deleteChat(chatId);
+    
+    if (deleted) {
+      res.status(200).json({ message: 'Chat deleted successfully' });
+    } else {
+      res.status(404).json({ message: 'Chat not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting chat' });
+  }
 });
 
 // Exports the chat router
