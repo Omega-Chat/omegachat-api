@@ -12,7 +12,7 @@ const ChatSchema = new Schema<Chat>(
   {
     id_usuario1: {
       type: String,
-      ref: 'ChatUser', // Reference to user 1
+      ref: 'ChatUser',
     },
     id_usuario2: {
       type: String,
@@ -20,6 +20,7 @@ const ChatSchema = new Schema<Chat>(
     },
     msg_list: {
       type: [[String]],
+      default: [],
     },
 },
   { timestamps: true }
@@ -73,17 +74,17 @@ export class MongoDBChatService {
     }
   }
 
-  async getMessagesFromChat(chatId: string): Promise<string[][] | null> {
-    try {
-      await this.connect();
-      const chat = await ChatModel.findById(chatId);
-      return chat ? chat.msg_list : null;
-    } catch (error) {
-      console.error('Error fetching messages from chat:', error);
-      return null;
-    }
+  async getMessagesFromChat(chatId: string): Promise<string[][] | undefined | null> {
+    await this.connect();
+    const chat = await ChatModel.findById(chatId)
+    return chat?.msg_list;
   }
 
+  async getChatById(chatId: string): Promise<Chat | null> {
+    await this.connect();
+    return ChatModel.findById(chatId);
+  }
+  
   async deleteChat(chatId: string): Promise<boolean> {
     try {
       await this.connect();

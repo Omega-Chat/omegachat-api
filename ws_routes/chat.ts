@@ -1,6 +1,4 @@
 import express from 'express';
-import { createServer } from 'http';
-import { WebSocketServer } from 'ws';
 import { MongoDBConnection } from '../services/db_connection/mdb_connection.ts';
 import { MongoDBChatService } from '../services/db_connection/chat.ts';
 
@@ -42,21 +40,22 @@ ChatRouter.post('/chats/:chatId/messages', async (req, res) => {
   }
 });
 
-// Route to get messages from a chat
-ChatRouter.get('/chats/:chatId/messages', async (req, res) => {
+// Route to get a chat by id
+ChatRouter.get('/chats/:chatId', async (req, res) => {
   try {
     const { chatId } = req.params;
-    const messages = await chatService.getMessagesFromChat(chatId);
-
-    if (messages !== null) {
-      res.status(200).json(messages);
-    } else {
-      res.status(404).json({ message: 'Chat not found or no messages available' });
+    const chat = await chatService.getChatById(chatId);
+    console.log(chat?.msg_list)
+    if (!chat) {
+      res.status(404).json({ message: 'Chat not found' });
+      return;
     }
+    res.status(200).json(chat);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching messages from chat' });
+    res.status(500).json({ message: 'Error fetching chat' });
   }
 });
+
 
 // Route to delete a chat by its ID
 ChatRouter.delete('/chats/:chatId', async (req, res) => {
