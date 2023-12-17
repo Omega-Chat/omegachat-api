@@ -88,9 +88,10 @@ UserRouter.put('/users/:userId/id_addressee', async (req, res) => {
 });
 
 // Route to find a user by email and password
-UserRouter.get('/users/:email/:password', async (req, res) => {
+
+UserRouter.post('/users/loginUser', async (req, res) => {
   try {
-    const { email, password } = req.params;
+    const { email, password } = req.body;
     const user = await UserService.findUserByEmailAndPassword(email, password);
     if (!user) {
       res.status(404).json({ message: 'User not found' });
@@ -101,5 +102,6 @@ UserRouter.get('/users/:email/:password', async (req, res) => {
     res.status(500).json({ message: 'Error finding user' });
   }
 });
+
 
 export default UserRouter;
