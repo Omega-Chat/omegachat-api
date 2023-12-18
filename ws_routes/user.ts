@@ -46,8 +46,6 @@ UserRouter.put('/users/:userId/pub_key', async (req, res) => {
   try {
     const { userId } = req.params;
     const { pub_key } = req.body;
-    console.log(userId);
-    console.log(pub_key);
     const updatedUser = await UserService.updatePubKey(userId, pub_key);
     
     if (updatedUser) {
@@ -65,8 +63,6 @@ UserRouter.put('/users/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
     const { newState } = req.body;
-    console.log(userId);
-    console.log(newState);
     const updatedUser =  await UserService.exitUserById(userId, newState);
     
     if (updatedUser) {

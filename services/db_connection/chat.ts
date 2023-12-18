@@ -19,7 +19,7 @@ const ChatSchema = new Schema<Chat>(
       ref: 'ChatUser',
     },
     msg_list: {
-      type: [[String]],
+      type: [[String, String]],
       default: [],
     },
 },
@@ -56,12 +56,17 @@ export class MongoDBChatService {
     });
   }
 
-  async addMessageToChat(chatId: string, message: string): Promise<Chat | null> {
+  async addMessageToChat(chatId: string, message: string, sender: string): Promise<Chat | null> {
     try {
       await this.connect();
       const updatedChat = await ChatModel.findByIdAndUpdate(
         chatId,
-        { $push: { msg_list: message }, $set: { data_hora: Date.now() } },
+        { 
+          $push: { 
+            msg_list: [ message, sender ]  // Push an object with both message and sender
+          }, 
+          $set: { data_hora: Date.now() } 
+        },
         { new: true }
       );
       if (!updatedChat) {

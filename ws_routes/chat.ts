@@ -21,7 +21,8 @@ ChatRouter.get('/chats/:id_usuario1/:id_usuario2', async (req, res) => {
   try {
     const { id_usuario1, id_usuario2 } = req.params;
     const chat = await chatService.findChatByUsers(id_usuario1, id_usuario2);
-    res.json(chat || {});
+    console.log(chat)
+    res.json(chat || null);
   } catch (error) {
     res.status(400).json({ message: (error as any).message || 'Error finding chat' });
   }
@@ -31,10 +32,9 @@ ChatRouter.get('/chats/:id_usuario1/:id_usuario2', async (req, res) => {
 ChatRouter.post('/chats/:chatId/messages', async (req, res) => {
   try {
     const { chatId } = req.params;
-    const { message } = req.body;
-    console.log(message)
-    const updatedChat = await chatService.addMessageToChat(chatId, message);
-    res.status(201).json(updatedChat);
+    const { message, sender } = req.body;
+    const updatedChat = await chatService.addMessageToChat(chatId, message, sender);
+    res.status(200).json(updatedChat);
   } catch (error) {
     res.status(400).json({ message: (error as any).message || 'Error adding message to chat' });
   }
@@ -45,7 +45,6 @@ ChatRouter.get('/chats/:chatId', async (req, res) => {
   try {
     const { chatId } = req.params;
     const chat = await chatService.getChatById(chatId);
-    console.log(chat?.msg_list)
     if (!chat) {
       res.status(404).json({ message: 'Chat not found' });
       return;
