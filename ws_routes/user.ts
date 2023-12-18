@@ -68,13 +68,14 @@ UserRouter.put('/users/:userId', async (req, res) => {
     console.log(userId);
     console.log(newState);
     const updatedUser =  await UserService.exitUserById(userId, newState);
+    
     if (updatedUser) {
       res.status(200).json(updatedUser);
     } else {
       res.status(404).json({ message: 'User not found' });
     }
   } catch (error: any) {
-    res.status(400).json({ message: error?.message || 'Error deleting user' });
+    res.status(500).json({ message: error?.message || 'Error deleting user' });
   }
 });
 

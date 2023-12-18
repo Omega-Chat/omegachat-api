@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 import { DB_URL } from '../../constants.ts';
 import { Connection } from '../connection.ts';
 
-interface Chat extends Document {
+interface Chat {
   id_usuario1?: string;
   id_usuario2?: string;
   msg_list: string[][];
