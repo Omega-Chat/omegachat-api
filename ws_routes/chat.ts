@@ -10,7 +10,7 @@ ChatRouter.post('/chats', async (req, res) => {
   try {
     const { id_usuario1, id_usuario2 } = req.body; // Extract user IDs from the request body
     const newChat = await chatService.createChat(id_usuario1, id_usuario2);
-    res.status(201).json(newChat);
+    res.status(200).json(newChat);
   } catch (error) {
     res.status(400).json({ message: (error as any).message || 'Error creating a new chat' });
   }

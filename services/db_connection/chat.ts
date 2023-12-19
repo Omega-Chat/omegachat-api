@@ -39,12 +39,26 @@ export class MongoDBChatService {
 
   async createChat(id_usuario1: string, id_usuario2: string): Promise<Chat> {
     await this.connect();
-    const newChat = await ChatModel.create({
-      id_usuario1,
-      id_usuario2,
+
+    // Check if a chat already exists between the two users in the given order
+    const existingChat = await ChatModel.findOne({
+        $or: [
+            { id_usuario1: id_usuario1, id_usuario2: id_usuario2 },
+            { id_usuario1: id_usuario2, id_usuario2: id_usuario1 }
+        ]
     });
-    return newChat;
-  }
+
+    // If an existing chat is found, return it; otherwise, create a new chat
+    if (existingChat) {
+        return existingChat;
+    } else {
+        const newChat = await ChatModel.create({
+            id_usuario1,
+            id_usuario2,
+        });
+        return newChat;
+    }
+}
 
   async findChatByUsers(id_usuario1: string, id_usuario2: string): Promise<Chat | null> {
     await this.connect();
@@ -85,7 +99,7 @@ export class MongoDBChatService {
     return chat?.msg_list;
   }
 
-  async getChatById(chatId: string): Promise<Chat | null> {
+    async getChatById(chatId: string): Promise<Chat | null> {
     await this.connect();
     return ChatModel.findById(chatId);
   }
