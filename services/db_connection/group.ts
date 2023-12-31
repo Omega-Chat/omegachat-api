@@ -4,13 +4,17 @@ import { Connection } from '../connection.ts';
 
 interface ChatGroup extends Document {
   msg_list: string[][];
+  user_ids: string[];
 }
 
 const ChatGroupSchema = new Schema<ChatGroup>(
   {
     msg_list: {
-      type: [[String]], // Array of strings (messages)
+      type: [[String, String]], // Array of strings (messages)
       default: [],
+    },
+    user_ids: {
+      type: [String], // Array of user IDs 
     },
   },
   { timestamps: true }
@@ -27,20 +31,21 @@ export class MongoDBChatGroupService {
     if (!isConnected) throw new Error('DB not connected');
   }
 
-  async createChatGroup(): Promise<ChatGroup> {
+  async createChatGroup(userIds: string[]): Promise<ChatGroup> {
     await this.connect();
     const newChatGroup = await ChatGroupModel.create({
       msg_list: [],
+      user_ids: userIds,
     });
     return newChatGroup;
   }
 
-  async addMessageToGroup(groupId: string, message: string): Promise<ChatGroup | null> {
+  async addMessageToGroup(groupId: string, message: string, sender: string): Promise<ChatGroup | null> {
     try {
       await this.connect();
       const updatedGroup = await ChatGroupModel.findByIdAndUpdate(
         groupId,
-        { $push: { msg_list: message }, $set: { updatedAt: Date.now() } },
+        { $push: { msg_list: message, sender }, $set: { updatedAt: Date.now() } },
         { new: true }
       );
       if (!updatedGroup) {

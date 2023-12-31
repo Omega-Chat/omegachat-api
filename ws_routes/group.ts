@@ -8,7 +8,9 @@ const chatGroupService = new MongoDBChatGroupService(new MongoDBConnection());
 // Route to create a new chat group
 ChatGroupRouter.post('/chatGroups', async (req, res) => {
   try {
-    const newChatGroup = await chatGroupService.createChatGroup();
+    const { userIds } = req.body;
+    const newChatGroup = await chatGroupService.createChatGroup(userIds);
+    console.log("Chat group sucessfully created")
     res.status(201).json(newChatGroup);
   } catch (error) {
     res.status(500).json({ message: 'Error creating chat group' });
@@ -19,8 +21,8 @@ ChatGroupRouter.post('/chatGroups', async (req, res) => {
 ChatGroupRouter.post('/chatGroups/:groupId/messages', async (req, res) => {
   try {
     const { groupId } = req.params;
-    const { message } = req.body;
-    const updatedGroup = await chatGroupService.addMessageToGroup(groupId, message);
+    const { message, sender } = req.body;
+    const updatedGroup = await chatGroupService.addMessageToGroup(groupId, message, sender);
     
     if (updatedGroup) {
       res.status(200).json(updatedGroup);
