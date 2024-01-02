@@ -10,14 +10,7 @@ interface ChatGroup extends Document {
 const ChatGroupSchema = new Schema<ChatGroup>(
   {
     msg_list: {
-      type: [
-        [
-          {
-            userId: String,
-            cipherText: String,
-          }
-        ]
-      ],
+      type: [[String, String, String]],
       default: [],
     },
     user_ids: {
@@ -61,12 +54,12 @@ export class MongoDBChatGroupService {
   }
   
 
-  async addMessageToGroup(groupId: string, message: string, sender: string): Promise<ChatGroup | null> {
+  async addMessageToGroup(groupId: string, message: string, sender: string, receiver: string): Promise<ChatGroup | null> {
     try {
       await this.connect();
       const updatedGroup = await ChatGroupModel.findByIdAndUpdate(
         groupId,
-        { $push: { msg_list: [[ message, sender ]] }, $set: { updatedAt: Date.now() } },
+        { $push: { msg_list: [ message, sender, receiver ] }, $set: { updatedAt: Date.now() } },
         { new: true }
       );
       if (!updatedGroup) {

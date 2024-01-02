@@ -21,8 +21,8 @@ ChatGroupRouter.post('/chatGroups', async (req, res) => {
 ChatGroupRouter.post('/chatGroups/:groupId/messages', async (req, res) => {
   try {
     const { groupId } = req.params;
-    const { message, sender } = req.body;
-    const updatedGroup = await chatGroupService.addMessageToGroup(groupId, message, sender);
+    const { message, sender, receiver } = req.body;
+    const updatedGroup = await chatGroupService.addMessageToGroup(groupId, message, sender, receiver);
     
     if (updatedGroup) {
       res.status(200).json(updatedGroup);
