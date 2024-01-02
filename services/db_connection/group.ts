@@ -10,7 +10,14 @@ interface ChatGroup extends Document {
 const ChatGroupSchema = new Schema<ChatGroup>(
   {
     msg_list: {
-      type: [[String, String]], // Array of strings (messages)
+      type: [
+        [
+          {
+            userId: String,
+            cipherText: String,
+          }
+        ]
+      ],
       default: [],
     },
     user_ids: {
@@ -31,21 +38,35 @@ export class MongoDBChatGroupService {
     if (!isConnected) throw new Error('DB not connected');
   }
 
-  async createChatGroup(userIds: string[]): Promise<ChatGroup> {
+  async createChatGroup(userIds: string[]): Promise<ChatGroup | null> {
+    const sortedUserIds = userIds.slice().sort(); 
     await this.connect();
+    
+    // Encontre um chat em grupo com os mesmos IDs de usuário
+    const existingChatGroup = await ChatGroupModel.findOne({ user_ids: sortedUserIds });
+  
+    // Se o chat em grupo já existir, retorne-o
+    if (existingChatGroup) {
+      console.log("uptade group.")
+      return existingChatGroup;
+    }
+  
+    // Caso contrário, crie um novo chat em grupo
     const newChatGroup = await ChatGroupModel.create({
       msg_list: [],
-      user_ids: userIds,
+      user_ids: sortedUserIds,
     });
+  
     return newChatGroup;
   }
+  
 
   async addMessageToGroup(groupId: string, message: string, sender: string): Promise<ChatGroup | null> {
     try {
       await this.connect();
       const updatedGroup = await ChatGroupModel.findByIdAndUpdate(
         groupId,
-        { $push: { msg_list: message, sender }, $set: { updatedAt: Date.now() } },
+        { $push: { msg_list: [[ message, sender ]] }, $set: { updatedAt: Date.now() } },
         { new: true }
       );
       if (!updatedGroup) {
