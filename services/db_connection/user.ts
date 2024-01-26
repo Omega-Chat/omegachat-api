@@ -62,7 +62,7 @@ export class MongoDBUserService {
 
   async findAll(): Promise<User[]> {
     await this.connect();
-    return UserModel.find({});
+    return UserModel.find({online: true});
   }
 
   async exitUserById(userId: string, newState: boolean): Promise<User | null> {

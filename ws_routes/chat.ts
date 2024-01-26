@@ -40,6 +40,16 @@ ChatRouter.post('/chats/:chatId/messages', async (req, res) => {
   }
 });
 
+// Route to get all users
+ChatRouter.get('/chats', async (req, res) => {
+  try {
+    const allChats = await chatService.findAll();
+    res.json(allChats);
+  } catch (error: any) {
+    res.status(400).json({ message: error?.message || 'Error fetching chats' });
+  }
+});
+
 // Route to get a chat by id
 ChatRouter.get('/chats/:chatId', async (req, res) => {
   try {

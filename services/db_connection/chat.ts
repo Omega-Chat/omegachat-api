@@ -70,6 +70,11 @@ export class MongoDBChatService {
     });
   }
 
+  async findAll(): Promise<Chat[]> {
+    await this.connect();
+    return ChatModel.find({});
+  }
+
   async addMessageToChat(chatId: string, message: string, sender: string): Promise<Chat | null> {
     try {
       await this.connect();
