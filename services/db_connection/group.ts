@@ -77,4 +77,15 @@ export class MongoDBChatGroupService {
     const group = await ChatGroupModel.findById(groupId);
     return group ? group.msg_list : null;
   }
+
+  async deleteChat(chatId: string): Promise<boolean> {
+    try {
+      await this.connect();
+      const deletedGroupChat = await ChatGroupModel.findByIdAndDelete(chatId);
+      return !!deletedGroupChat; // Returns true if the chat was successfully deleted, false otherwise
+    } catch (error) {
+      console.error('Error deleting group chat:', error);
+      return false;
+    }
+  }  
 }

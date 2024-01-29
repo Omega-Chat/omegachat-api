@@ -45,4 +45,36 @@ ChatGroupRouter.get('/chatGroups/:groupId/messages', async (req, res) => {
   }
 });
 
+// Route to delete a group chat by its ID
+ChatGroupRouter.delete('/chatGroups/:groupId', async (req, res) => {
+  try {
+    const { groupId } = req.params;
+    const deleted = await chatGroupService.deleteChat(groupId);
+    
+    if (deleted) {
+      res.status(200).json({ message: 'Group chat deleted successfully' });
+    } else {
+      res.status(404).json({ message: 'Group chat not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting group chat' });
+  }
+});
+
+// Route to delete a chat by its ID
+ChatGroupRouter.delete('/chatGroups/:groupId/:userId', async (req, res) => {
+  try {
+    const { groupId, userId } = req.params;
+    const deleted = await chatGroupService.deleteChat(groupId);
+    
+    if (deleted) {
+      res.status(200).json({ message: 'Group chat deleted successfully' });
+    } else {
+      res.status(404).json({ message: 'Group chat not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting group chat' });
+  }
+});
+
 export default ChatGroupRouter;
