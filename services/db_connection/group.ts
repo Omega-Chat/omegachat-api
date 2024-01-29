@@ -78,6 +78,46 @@ export class MongoDBChatGroupService {
     return group ? group.msg_list : null;
   }
 
+  async getUsersInGroup(groupId: string): Promise<string[] | null> {
+    try {
+      await this.connect();
+
+      // Encontra o grupo de chat pelo ID
+      const group = await ChatGroupModel.findById(groupId);
+      if (!group) {
+        throw new Error('Chat group not found');
+      }
+
+      // Retorna o array de user_ids do grupo
+      return group.user_ids;
+    } catch (error) {
+      console.error('Error getting users in chat group:', error);
+      return null;
+    }
+  }
+
+  async removeUserFromGroup(groupId: string, userIdToRemove: string): Promise<ChatGroup | null> {
+    try {
+      await this.connect();
+
+      // Atualiza o grupo removendo o userIdToRemove do array user_ids
+      const updatedGroup = await ChatGroupModel.findByIdAndUpdate(
+        groupId,
+        { $pull: { user_ids: userIdToRemove }, $set: { updatedAt: Date.now() } },
+        { new: true }
+      );
+
+      if (!updatedGroup) {
+        throw new Error('Failed to update chat group');
+      }
+
+      return updatedGroup;
+    } catch (error) {
+      console.error('Error removing user from chat group:', error);
+      return null;
+    }
+  }
+
   async deleteChat(chatId: string): Promise<boolean> {
     try {
       await this.connect();
