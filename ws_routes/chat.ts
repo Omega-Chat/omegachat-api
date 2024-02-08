@@ -6,6 +6,10 @@ const ChatRouter = express.Router();
 const chatService = new MongoDBChatService(new MongoDBConnection());
 
 // Route to create a new chat between two users
+ChatRouter.get('/', async (req, res) => {
+  return res.json("hello world")
+})
+
 ChatRouter.post('/chats', async (req, res) => {
   try {
     const { id_usuario1, id_usuario2 } = req.body; // Extract user IDs from the request body

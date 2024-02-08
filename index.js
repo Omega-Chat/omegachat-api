@@ -18,7 +18,7 @@ app.use('/api', UserRouter);
 app.use('/api', ChatRouter);
 app.use('/api', ChatGroupRouter);
 
-const PORT = 8081;
+const PORT = process.env.PORT || 8081;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

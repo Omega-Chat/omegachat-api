@@ -99,9 +99,6 @@ UserRouter.get('/users/:userId', async (req: Request, res: Response) => {
   }
 });
 
-
-
-
 // Route to update id_addressee of a user
 UserRouter.put('/users/:userId/id_addressee', async (req, res) => {
   try {
