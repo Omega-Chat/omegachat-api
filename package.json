@@ -16,11 +16,11 @@
     "typescript": "^5.3.3"
   },
   "scripts": {
-    "start": "ts-node-esm index.js",
-    "build": "tsc"
+    "build": "tsc",
+    "start": "ynode dist/index.js"
   },
   "type": "module",
   "engines": {
-    "ts-node": "18.x"
+    "node": "18.x"
   }
 }
