@@ -19,9 +19,9 @@ app.use(cors(corsConfig))
 app.use(bodyParser.json());
 
 // Use the route
-app.use('/api', UserRouter);
-app.use('/api', ChatRouter);
-app.use('/api', ChatGroupRouter);
+app.use('/', UserRouter);
+app.use('/', ChatRouter);
+app.use('/', ChatGroupRouter);
 
 const PORT = process.env.PORT || 8081;
 app.listen(PORT, () => {
