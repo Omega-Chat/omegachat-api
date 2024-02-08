@@ -16,7 +16,8 @@
     "typescript": "^5.3.3"
   },
   "scripts": {
-    "start": "ts-node-esm index.js"
+    "start": "ts-node-esm index.js",
+    "build": "tsc"
   },
   "type": "module",
   "engines": {

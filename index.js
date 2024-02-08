@@ -8,12 +8,7 @@ import 'dotenv/config'
 
 const app = express();
 
-const corsConfig = {
-  origin: '',
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE']
-}
-app.use(cors(corsConfig))
+app.use(cors())
 
 // Middleware to parse incoming JSON payloads
 app.use(bodyParser.json());
