@@ -8,16 +8,17 @@ import 'dotenv/config'
 
 const app = express();
 
-app.use(bodyParser.json());
-
 app.use(cors());
 
-// Use the route
-app.use('/', UserRouter);
-app.use('/', ChatRouter);
-app.use('/', ChatGroupRouter);
+// Middleware to parse incoming JSON payloads
+app.use(bodyParser.json());
 
-const PORT = process.env.PORT || 8081;
+// Use the route
+app.use('/api', UserRouter);
+app.use('/api', ChatRouter);
+app.use('/api', ChatGroupRouter);
+
+const PORT = 8081;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
