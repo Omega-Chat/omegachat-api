@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { DB_URL } from '../../constants.ts';
-import { Connection } from '../connection.ts';
+import { DB_URL } from '../../constants.js';
+import { Connection } from '../connection.js';
 
 interface Chat {
   id_usuario1?: string;

@@ -1,6 +1,6 @@
 import express from 'express';
-import { MongoDBConnection } from '../services/db_connection/mdb_connection.ts';
-import { MongoDBChatGroupService } from '../services/db_connection/group.ts'; // Adjust the import path accordingly
+import { MongoDBConnection } from '../services/db_connection/mdb_connection.js';
+import { MongoDBChatGroupService } from '../services/db_connection/group.js';
 
 const ChatGroupRouter = express.Router();
 const chatGroupService = new MongoDBChatGroupService(new MongoDBConnection());

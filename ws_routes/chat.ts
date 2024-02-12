@@ -1,6 +1,6 @@
 import express from 'express';
-import { MongoDBConnection } from '../services/db_connection/mdb_connection.ts';
-import { MongoDBChatService } from '../services/db_connection/chat.ts';
+import { MongoDBConnection } from '../services/db_connection/mdb_connection.js';
+import { MongoDBChatService } from '../services/db_connection/chat.js';
 
 const ChatRouter = express.Router();
 const chatService = new MongoDBChatService(new MongoDBConnection());

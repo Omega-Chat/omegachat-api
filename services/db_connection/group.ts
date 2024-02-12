@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { DB_URL } from '../../constants.ts';
-import { Connection } from '../connection.ts';
+import { DB_URL } from '../../constants.js';
+import { Connection } from '../connection.js';
 
 interface ChatGroup extends Document {
   msg_list: string[][];

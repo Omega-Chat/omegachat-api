@@ -1,11 +1,13 @@
 import express from 'express';
 import { Request, Response } from 'express';
-import { MongoDBConnection } from '../services/db_connection/mdb_connection.ts';
-import { MongoDBUserService } from '../services/db_connection/user.ts';
+import { MongoDBConnection } from '../services/db_connection/mdb_connection.js';
+import { MongoDBUserService } from '../services/db_connection/user.js';
+import cors from 'cors';
 
 const UserRouter = express.Router();
 
 const UserService = new MongoDBUserService(new MongoDBConnection());
+
 
 // Route to create a new user
 UserRouter.post('/users', async (req: Request, res: Response) => {
@@ -20,7 +22,6 @@ UserRouter.post('/users', async (req: Request, res: Response) => {
 
 UserRouter.post('/loginUser', async (req: Request, res: Response) => {
   const { email, password} = req.body;
-
   try {
     
     // Check if both email and password are provided
