@@ -21,15 +21,16 @@ UserRouter.post('/users', async (req: Request, res: Response) => {
 });
 
 UserRouter.post('/loginUser', async (req: Request, res: Response) => {
-  const { email, password} = req.body;
+  const { email } = req.body;
+
   try {
     
     // Check if both email and password are provided
-    if (!email || !password) {
-      return res.status(400).json({ message: 'Both email and password are required' });
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
     }
     
-    const user = await UserService.findUserByEmailAndPassword(email, password);
+    const user = await UserService.findUserByEmail(email);
     
     if (!user) {
       res.status(404).json({ message: 'User not found' });

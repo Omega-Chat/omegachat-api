@@ -45,7 +45,7 @@ ChatGroupRouter.get('/chatGroups/:groupId/messages', async (req, res) => {
   }
 });
 
-ChatGroupRouter.get('/chatGroups/:groupId', async (req, res) => {
+ChatGroupRouter.get('/chatGroups/:groupId/users', async (req, res) => {
   try {
     const { groupId } = req.params;
     const userIds = await chatGroupService.getUsersInGroup(groupId);
@@ -53,6 +53,17 @@ ChatGroupRouter.get('/chatGroups/:groupId', async (req, res) => {
     }
    catch (error) {
     res.status(500).json({ message: 'Error getting users from group chat' });
+  }
+});
+
+ChatGroupRouter.get('/chatGroups/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const groupIds = await chatGroupService.getChatGroupsByUser(userId);
+    res.status(200).json(groupIds || []);
+    }
+   catch (error) {
+    res.status(500).json({ message: 'Error getting user groups' });
   }
 });
 
