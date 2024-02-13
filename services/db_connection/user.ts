@@ -51,8 +51,15 @@ export class MongoDBUserService {
 
   async create(newUser: User): Promise<User> {
     await this.connect();
-    const createdUser = await UserModel.create(newUser);
-    return createdUser;
+    const foundUser = await UserModel.find({email: newUser.email})
+    if(foundUser.length === 0){
+      console.log("Teste 1")
+      const createdUser = await UserModel.create(newUser);
+      return createdUser;
+    } else {
+      console.log("Teste 2")
+      throw new Error('E-mail já cadastrado!');
+    }
   }
 
   async findById(userId: string): Promise<User | null | undefined> {
@@ -111,9 +118,9 @@ export class MongoDBUserService {
     }
   }
 
-  async findUserByEmailAndPassword(email: string, password: string): Promise<User | null> {
+  async findUserByEmail(email: string): Promise<User | null> {
     await this.connect();
-    return UserModel.findOne({ email, password });
+    return UserModel.findOne({ email});
   }
   
 }
