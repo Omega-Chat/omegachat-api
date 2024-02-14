@@ -3,12 +3,14 @@ import { DB_URL } from '../../constants.js';
 import { Connection } from '../connection.js';
 
 interface ChatGroup extends Document {
+  name: string;
   msg_list: string[][];
   user_ids: string[];
 }
 
 const ChatGroupSchema = new Schema<ChatGroup>(
   {
+    name: String,
     msg_list: {
       type: [[String, String, String]],
       default: [],
@@ -31,12 +33,12 @@ export class MongoDBChatGroupService {
     if (!isConnected) throw new Error('DB not connected');
   }
 
-  async createChatGroup(userIds: string[]): Promise<ChatGroup | null> {
+  async createChatGroup(userIds: string[], name: string): Promise<ChatGroup | null> {
     const sortedUserIds = userIds.slice().sort(); 
     await this.connect();
     
     // Encontre um chat em grupo com os mesmos IDs de usuário
-    const existingChatGroup = await ChatGroupModel.findOne({ user_ids: sortedUserIds });
+    const existingChatGroup = await ChatGroupModel.findOne({ name: name});
   
     // Se o chat em grupo já existir, retorne-o
     if (existingChatGroup) {
@@ -46,6 +48,7 @@ export class MongoDBChatGroupService {
   
     // Caso contrário, crie um novo chat em grupo
     const newChatGroup = await ChatGroupModel.create({
+      name: name,
       msg_list: [],
       user_ids: sortedUserIds,
     });
@@ -107,7 +110,7 @@ export class MongoDBChatGroupService {
         }
 
         // Retorna um array com os IDs dos grupos
-        const groupIds = groups.map(group => group._id);
+        const groupIds = groups.map(group => group.name);
         return groupIds;
     } catch (error) {
         console.error('Error getting chat groups for the user:', error);
